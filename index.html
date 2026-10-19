@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataInsight - Analisis Penjualan</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+    line-height: 1.6;
+}
+
+header {
+    background: #102a43;
+    color: white;
+    padding: 22px 7%;
+}
+
+header h1 {
+    color: #67e8d4;
+    font-size: 25px;
+}
+
+header p {
+    color: #cbd5e1;
+    font-size: 14px;
+}
+
+nav {
+    background: #183b56;
+    padding: 12px 7%;
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+nav a:hover {
+    color: #67e8d4;
+}
+
+.container {
+    max-width: 1150px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.intro {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    border-left: 5px solid #0d9488;
+}
+
+h2 {
+    font-size: 21px;
+    margin-bottom: 15px;
+    color: #102a43;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px #0f172a0c;
+}
+
+.card p {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.value {
+    font-size: 23px;
+    font-weight: bold;
+    color: #0d9488;
+    margin-top: 8px;
+    overflow-wrap: anywhere;
+}
+
+.panel {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 12px #0f172a0c;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+th, td {
+    text-align: left;
+    padding: 12px 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+    background: #eaf5f5;
+    color: #102a43;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+.bar-row {
+    margin: 20px 0;
+}
+
+.bar-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 7px;
+    font-size: 14px;
+}
+
+.bar-bg {
+    background: #e2e8f0;
+    height: 18px;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bar {
+    background: #0d9488;
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.4s;
+}
+
+.recommendation {
+    background: #ecfdf5;
+    border-left: 5px solid #0d9488;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.recommendation h3 {
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #065f46;
+}
+
+form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input, select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+button {
+    background: #0d9488;
+    color: white;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #0f766e;
+}
+
+.delete-btn {
+    background: #dc2626;
+    padding: 7px 10px;
+    font-size: 12px;
+}
+
+.note {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 12px;
+}
+
+footer {
+    background: #102a43;
+    color: white;
+    text-align: center;
+    padding: 25px;
+    margin-top: 40px;
+    font-size: 13px;
+}
+
+@media(max-width: 600px) {
+    header h1 {
+        font-size: 21px;
+    }
+
+    .panel {
+        padding: 16px;
+    }
+
+    th, td {
+        padding: 9px 7px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>DataInsight</h1>
+    <p>Sistem Analisis Data Penjualan dan Rekomendasi Bisnis</p>
+</header>
+
+<nav>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#transaksi">Data Transaksi</a>
+    <a href="#grafik">Grafik</a>
+    <a href="#rekomendasi">Rekomendasi</a>
+</nav>
+
+<main class="container">
+
+    <section class="intro">
+        <h2>Studi Kasus: Analisis Penjualan Toko</h2>
+        <p>
+            Sebuah toko ingin mengetahui produk yang paling laris,
+            jumlah omzet, total modal, dan keuntungan yang diperoleh.
+            Data transaksi dianalisis untuk membantu pemilik toko
+            menentukan strategi penjualan berdasarkan data.
+        </p>
+        <p class="note">
+            Data yang digunakan adalah data simulasi untuk keperluan
+            pembelajaran, bukan data toko sungguhan.
+        </p>
+    </section>
+
+    <section id="dashboard">
+        <h2>Dashboard Penjualan</h2>
+
+        <div class="cards">
+            <div class="card">
+                <p>Total Omzet</p>
+                <div class="value" id="omzet">Rp0</div>
+            </div>
+
+            <div class="card">
+                <p>Total Modal</p>
+                <div class="value" id="modal">Rp0</div>
+            </div>
+
+            <div class="card">
+                <p>Total Keuntungan</p>
+                <div class="value" id="untung">Rp0</div>
+            </div>
+
+            <div class="card">
+                <p>Produk Terlaris</p>
+                <div class="value" id="terlaris">-</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="transaksi" class="panel">
+        <h2>Data Transaksi</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Produk</th>
+                        <th>Jumlah</th>
+                        <th>Harga Jual</th>
+                        <th>Modal/Unit</th>
+                        <th>Omzet</th>
+                        <th>Untung</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelData"></tbody>
+            </table>
+        </div>
+
+        <p class="note">
+            Omzet = jumlah × harga jual.
+            Keuntungan = omzet − total modal.
+        </p>
+    </section>
+
+    <section id="grafik" class="panel">
+        <h2>Grafik Omzet per Produk</h2>
+        <p class="note">
+            Grafik diperbarui otomatis ketika data transaksi berubah.
+        </p>
+        <div id="grafikProduk"></div>
+    </section>
+
+    <section id="rekomendasi" class="panel">
+        <h2>Hasil Analisis dan Rekomendasi</h2>
+        <div id="hasilAnalisis"></div>
+    </section>
+
+    <section class="panel">
+        <h2>Tambah Transaksi</h2>
+        <p class="note" style="margin-bottom:18px">
+            Masukkan transaksi baru untuk menguji perhitungan sistem.
+        </p>
+
+        <form id="formTransaksi">
+            <div>
+                <label for="tanggal">Tanggal</label>
+                <input type="date" id="tanggal" required>
+            </div>
+
+            <div>
+                <label for="produk">Nama Produk</label>
+                <input type="text" id="produk"
+                       placeholder="Contoh: Roti" required>
+            </div>
+
+            <div>
+                <label for="jumlah">Jumlah Terjual</label>
+                <input type="number" id="jumlah"
+                       min="1" step="1" required>
+            </div>
+
+            <div>
+                <label for="harga">Harga Jual/Unit (Rp)</label>
+                <input type="number" id="harga"
+                       min="1" step="1" required>
+            </div>
+
+            <div>
+                <label for="modalUnit">Modal/Unit (Rp)</label>
+                <input type="number" id="modalUnit"
+                       min="0" step="1" required>
+            </div>
+
+            <div style="align-self:end">
+                <button type="submit">Tambah Transaksi</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="intro">
+        <h2>Metode Analisis</h2>
+        <p>
+            <strong>Descriptive:</strong> menghitung omzet,
+            modal, keuntungan, dan produk terlaris.
+        </p>
+        <p>
+            <strong>Diagnostic:</strong> membandingkan omzet
+            dan keuntungan setiap produk.
+        </p>
+        <p>
+            <strong>Predictive:</strong> membuat perkiraan omzet
+            berikutnya berdasarkan rata-rata omzet per transaksi
+            pada data simulasi.
+        </p>
+        <p>
+            <strong>Prescriptive:</strong> memberikan saran
+            untuk menentukan produk yang perlu diprioritaskan.
+        </p>
+        <p class="note">
+            Perkiraan ini merupakan model sederhana untuk pembelajaran,
+            bukan prediksi statistik yang telah divalidasi.
+            Rekomendasi dibuat menggunakan aturan program, bukan
+            model AI yang dilatih.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    <p>DataInsight | Implementasi Analisis Data</p>
+    <p>Materi Kuliah: Make Sense of Data with Analysis and AI</p>
+    <p id="tahun"></p>
+</footer>
+
+<script>
+const data = [
+    {tanggal:"2026-10-01", produk:"Kopi", jumlah:20, harga:12000, modal:7000},
+    {tanggal:"2026-10-02", produk:"Roti", jumlah:15, harga:10000, modal:6000},
+    {tanggal:"2026-10-03", produk:"Kopi", jumlah:25, harga:12000, modal:7000},
+    {tanggal:"2026-10-04", produk:"Teh", jumlah:18, harga:8000, modal:4000},
+    {tanggal:"2026-10-05", produk:"Roti", jumlah:22, harga:10000, modal:6000},
+    {tanggal:"2026-10-06", produk:"Teh", jumlah:12, harga:8000, modal:4000},
+    {tanggal:"2026-10-07", produk:"Kopi", jumlah:30, harga:12000, modal:7000}
+];
+
+const rupiah = angka =>
+    new Intl.NumberFormat("id-ID", {
+        style:"currency",
+        currency:"IDR",
+        maximumFractionDigits:0
+    }).format(angka);
+
+const ambil = id => document.getElementById(id);
+
+function hitung() {
+    const produkData = {};
+
+    let totalOmzet = 0;
+    let totalModal = 0;
+    let totalUnit = 0;
+
+    data.forEach(item => {
+        const omzet = item.jumlah * item.harga;
+        const modal = item.jumlah * item.modal;
+        const untung = omzet - modal;
+
+        totalOmzet += omzet;
+        totalModal += modal;
+        totalUnit += item.jumlah;
+
+        if (!produkData[item.produk]) {
+            produkData[item.produk] = {
+                jumlah:0,
+                omzet:0,
+                modal:0,
+                untung:0
+            };
+        }
+
+        produkData[item.produk].jumlah += item.jumlah;
+        produkData[item.produk].omzet += omzet;
+        produkData[item.produk].modal += modal;
+        produkData[item.produk].untung += untung;
+    });
+
+    const totalUntung = totalOmzet - totalModal;
+
+    ambil("omzet").textContent = rupiah(totalOmzet);
+    ambil("modal").textContent = rupiah(totalModal);
+    ambil("untung").textContent = rupiah(totalUntung);
+
+    const daftarProduk = Object.entries(produkData);
+
+    const terlaris = [...daftarProduk].sort(
+        (a,b) => b[1].jumlah - a[1].jumlah
+    )[0];
+
+    ambil("terlaris").textContent =
+        terlaris ? terlaris[0] : "-";
+
+    tampilkanTabel();
+    tampilkanGrafik(produkData);
+    tampilkanAnalisis(
+        produkData, totalOmzet, totalModal,
+        totalUntung, totalUnit, terlaris
+    );
+}
+
+function tampilkanTabel() {
+    ambil("tabelData").innerHTML = data.map((item,index) => {
+        const omzet = item.jumlah * item.harga;
+        const untung = omzet - item.jumlah * item.modal;
+
+        return `
+        <tr>
+            <td>${item.tanggal}</td>
+            <td>${aman(item.produk)}</td>
+            <td>${item.jumlah}</td>
+            <td>${rupiah(item.harga)}</td>
+            <td>${rupiah(item.modal)}</td>
+            <td>${rupiah(omzet)}</td>
+            <td>${rupiah(untung)}</td>
+            <td>
+                <button class="delete-btn"
+                    onclick="hapusData(${index})">
+                    Hapus
+                </button>
+            </td>
+        </tr>`;
+    }).join("");
+}
+
+function tampilkanGrafik(produkData) {
+    const daftar = Object.entries(produkData);
+    const maksimum = Math.max(
+        1, ...daftar.map(item => item[1].omzet)
+    );
+
+    ambil("grafikProduk").innerHTML = daftar.map(([nama, nilai]) => {
+        const lebar = nilai.omzet / maksimum * 100;
+
+        return `
+        <div class="bar-row">
+            <div class="bar-label">
+                <strong>${aman(nama)}</strong>
+                <span>${rupiah(nilai.omzet)}</span>
+            </div>
+            <div class="bar-bg">
+                <div class="bar" style="width:${lebar}%"></div>
+            </div>
+            <p class="note">
+                Terjual ${nilai.jumlah} unit |
+                Untung ${rupiah(nilai.untung)}
+            </p>
+        </div>`;
+    }).join("");
+}
+
+function tampilkanAnalisis(
+    produkData, omzet, modal, untung, unit, terlaris
+) {
+    const daftar = Object.entries(produkData);
+
+    if (daftar.length === 0) {
+        ambil("hasilAnalisis").innerHTML =
+            "<p>Belum ada data untuk dianalisis.</p>";
+        return;
+    }
+
+    const palingUntung = [...daftar].sort(
+        (a,b) => b[1].untung - a[1].untung
+    )[0];
+
+    const palingRendah = [...daftar].sort(
+        (a,b) => a[1].untung - b[1].untung
+    )[0];
+
+    const rataTransaksi = omzet / data.length;
+    const margin = omzet > 0 ? untung / omzet * 100 : 0;
+
+    ambil("hasilAnalisis").innerHTML = `
+        <div class="recommendation">
+            <h3>1. Hasil Descriptive Analytics</h3>
+            Total penjualan mencapai ${rupiah(omzet)} dengan
+            keuntungan ${rupiah(untung)} dari ${unit} unit produk.
+            Margin keuntungan keseluruhan sebesar ${margin.toFixed(1)}%.
+        </div>
+
+        <div class="recommendation">
+            <h3>2. Hasil Diagnostic Analytics</h3>
+            Produk ${aman(palingUntung[0])} menghasilkan keuntungan
+            terbesar, yaitu ${rupiah(palingUntung[1].untung)}.
+            Produk ${aman(palingRendah[0])} menghasilkan keuntungan
+            terendah, yaitu ${rupiah(palingRendah[1].untung)}.
+            Perbedaan ini dapat ditelusuri dari jumlah penjualan,
+            harga, dan modal setiap produk.
+        </div>
+
+        <div class="recommendation">
+            <h3>3. Hasil Predictive Analytics</h3>
+            Jika menggunakan rata-rata omzet per transaksi sebagai
+            perkiraan sederhana, nilai acuan omzet transaksi
+            berikutnya adalah ${rupiah(rataTransaksi)}.
+            Ini bukan jaminan omzet yang akan terjadi.
+        </div>
+
+        <div class="recommendation">
+            <h3>4. Rekomendasi Prescriptive Analytics</h3>
+            Prioritaskan evaluasi stok produk ${aman(terlaris[0])}
+            karena jumlah unit terjual paling banyak.
+            Pertimbangkan juga promosi atau evaluasi biaya untuk
+            produk ${aman(palingRendah[0])} agar keuntungannya
+            dapat ditingkatkan. Keputusan akhir tetap perlu
+            mempertimbangkan permintaan dan biaya operasional.
+        </div>
+    `;
+}
+
+function aman(teks) {
+    return String(teks).replace(/[&<>"']/g, karakter => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+    })[karakter]);
+}
+
+function hapusData(index) {
+    data.splice(index,1);
+    hitung();
+}
+
+ambil("formTransaksi").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const tanggal = ambil("tanggal").value;
+    const produk = ambil("produk").value.trim();
+    const jumlah = Number(ambil("jumlah").value);
+    const harga = Number(ambil("harga").value);
+    const modal = Number(ambil("modalUnit").value);
+
+    if (!tanggal || !produk ||
+        !Number.isInteger(jumlah) || jumlah <= 0 ||
+        !Number.isFinite(harga) || harga <= 0 ||
+        !Number.isFinite(modal) || modal < 0 ||
+        modal > harga) {
+        alert("Periksa kembali data. Modal harus antara Rp0 dan harga jual.");
+        return;
+    }
+
+    data.push({tanggal, produk, jumlah, harga, modal});
+
+    this.reset();
+    ambil("tanggal").value = new Date().toLocaleDateString(
+        "en-CA"
+    );
+
+    hitung();
+});
+
+ambil("tanggal").value = new Date().toLocaleDateString("en-CA");
+ambil("tahun").textContent = "© " + new Date().getFullYear();
+
+hitung();
+</script>
+
+</body>
+</html>
